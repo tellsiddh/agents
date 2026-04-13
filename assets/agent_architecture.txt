@@ -50,7 +50,7 @@
 <!-- ROW 1: USER -->
 <g class="c-gray">
   <rect x="240" y="24" width="200" height="44" rx="8" stroke-width="0.5"/>
-  <text class="th" x="340" y="39" text-anchor="middle" dominant-baseline="central">Standard User</text>
+  <text class="th" x="340" y="39" text-anchor="middle" dominant-baseline="central">User</text>
   <text class="ts" x="340" y="57" text-anchor="middle" dominant-baseline="central">query + optional file upload</text>
 </g>
 
