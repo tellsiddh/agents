@@ -1,4 +1,6 @@
 # agents
+Everything is a tool, irrespective of whether it's a function, an API call, or a human interaction. The agent's job is to figure out which tool to use and when.
+Main agent calls a tool which can be a tool, mcp, or another agent. Every sub agent can do the same thing. Max depth and cycles can be configured in config.json to prevent infinite loops.
 
 ## To run
 add CREATEAI_API_KEY and CREATEAI_API_URL to .env file

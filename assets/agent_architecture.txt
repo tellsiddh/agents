@@ -256,7 +256,7 @@
 <g class="c-coral">
   <rect x="510" y="1012" width="130" height="56" rx="8" stroke-width="0.5"/>
   <text class="th" x="575" y="1032" text-anchor="middle" dominant-baseline="central">Other tools</text>
-  <text class="ts" x="575" y="1050" text-anchor="middle" dominant-baseline="central">audio · video · etc</text>
+  <text class="ts" x="575" y="1050" text-anchor="middle" dominant-baseline="central">audio · video · image · etc</text>
 </g>
 
 <path d="M120 1068 L120 1120 L340 1120" fill="none" stroke="#993C1D" stroke-width="1" marker-end="url(#arrow)"/>
