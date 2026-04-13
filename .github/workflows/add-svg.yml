@@ -1,0 +1,52 @@
+name: Generate SVG from Text File
+
+on:
+  push:
+    paths:
+      - 'assets/agent_architecture.txt'
+
+jobs:
+  generate-svg:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Generate SVG from text file
+        run: |
+          echo "Generating SVG from agent_architecture.txt..."
+          
+          # Create assets directory if it doesn't exist
+          mkdir -p assets
+          
+          # Copy the content from .txt to .svg
+          if [ -f "assets/agent_architecture.txt" ]; then
+            cp assets/agent_architecture.txt assets/agent_architecture.svg
+            echo "✓ Generated assets/agent_architecture.svg"
+          else
+            echo "✗ Error: assets/agent_architecture.txt not found"
+            exit 1
+          fi
+          
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+          
+      - name: Commit generated SVG
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add assets/agent_architecture.svg
+          git commit -m "chore: auto-generate SVG from agent_architecture.txt [skip ci]"
+          
+      - name: Push changes
+        if: steps.git-check.outputs.changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
