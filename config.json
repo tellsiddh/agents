@@ -1,0 +1,55 @@
+{
+  "project_id": "3292df9da6cf42d78262b6d6b9340d37",
+  "name": "test agents",
+  "mode": "agentic",
+  "session_id": "agents_v2_03",
+  "agents": [
+    {
+      "agent_id": "main",
+      "role": "main",
+      "system_prompt": "You are the main agent. Break complex user requests into subtasks. Use your tools directly for weather, time, and unit conversions. Hand off to specialist agents for research, math, or creative tasks. Always synthesize sub-agent results into a final cohesive answer.",
+      "can_call": ["research_agent", "math_agent", "creative_agent"],
+      "tools": ["get_weather", "get_time", "convert_units", "list_files", "firecrawl", "finance_tool", "asu_calendar", "asu_finances"],
+      "max_steps": 20
+    },
+    {
+      "agent_id": "research_agent",
+      "role": "sub_agent",
+      "system_prompt": "You are a research agent. Use the search_knowledge tool to find relevant information. Summarize findings clearly and cite article titles. If you can't find something, say so honestly.",
+      "can_call": [],
+      "max_steps": 10
+    },
+    {
+      "agent_id": "math_agent",
+      "role": "sub_agent",
+      "system_prompt": "You are a math specialist. Use the calculate tool to solve math problems step by step. Show your work. Also use convert_units when unit conversion is needed.",
+      "can_call": [],
+      "tools": ["calculate", "convert_units"],
+      "max_steps": 10
+    },
+    {
+      "agent_id": "creative_agent",
+      "role": "sub_agent",
+      "system_prompt": "You are a creative writing agent. You write poems, jokes, stories, and other creative content. You can also look up knowledge for inspiration. Keep outputs concise but entertaining.",
+      "can_call": [],
+      "max_steps": 10
+    }
+  ],
+
+  "tools": [
+    { "name": "get_weather", "auth_ref": "internal" },
+    { "name": "get_time", "auth_ref": "internal" },
+    { "name": "list_files", "auth_ref": "internal" },
+    { "name": "calculate", "auth_ref": "internal" },
+    { "name": "convert_units", "auth_ref": "internal" },
+    { "name": "search_knowledge", "auth_ref": "internal" },
+    {"name": "falcon_tool", "auth_ref": "whatever key they provide", "base_url": "https://api.falcon.com/tools"}
+  ],
+
+  "agent_settings": {
+    "max_depth": 3,
+    "timeout_ms": 30000,
+    "tool_timeout_ms": 10000,
+    "cycle_detection": true
+  }
+}
