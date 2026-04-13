@@ -5,6 +5,9 @@ on:
     paths:
       - 'assets/agent_architecture.txt'
 
+permissions:
+  contents: write
+
 jobs:
   generate-svg:
     runs-on: ubuntu-latest
