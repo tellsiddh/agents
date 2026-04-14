@@ -1,2 +1,6 @@
 requests
 openai
+composio==0.10.7
+composio-openai==0.10.7
+python-dotenv
+httpx
