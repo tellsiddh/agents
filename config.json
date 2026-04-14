@@ -8,10 +8,10 @@
     {
       "agent_id": "main",
       "role": "main",
-      "system_prompt": "You are the main agent. Break complex user requests into subtasks. Use your tools directly for weather, time, and unit conversions. Hand off to specialist agents for research, math, or creative tasks. For email tasks, use Gmail tools. Always synthesize sub-agent results into a final cohesive answer.",
+      "system_prompt": "You are the main agent. Break complex user requests into subtasks. Use your tools directly for weather, time, and unit conversions. Hand off to specialist agents for research, math, or creative tasks. For email tasks, use Gmail tools. IMPORTANT: After executing a tool, review the result and provide a final response to the user. Do NOT call the same tool multiple times unless the previous attempt failed. Always synthesize sub-agent results into a final cohesive answer.",
       "can_call": ["research_agent", "math_agent", "creative_agent"],
-      "tools": ["get_weather", "get_time", "convert_units", "list_files", "GMAIL_SEND_EMAIL"],
-      "max_steps": 20
+      "tools": ["get_weather", "get_time", "convert_units", "list_files", "GMAIL"],
+      "max_steps": 10
     },
     {
       "agent_id": "research_agent",
@@ -44,6 +44,7 @@
     { "name": "calculate", "auth_ref": "internal" },
     { "name": "convert_units", "auth_ref": "internal" },
     { "name": "search_knowledge", "auth_ref": "internal" },
+    { "name": "GMAIL", "auth_ref": "composio", "description": "Send mail via Gmail" },
     { "name": "GMAIL_SEND_EMAIL", "auth_ref": "composio", "description": "Send mail via Gmail" },
     { "name": "SLACK", "auth_ref": "composio", "description": "All Slack actions (future)" },
     { "name": "FALCON_TOOL", "auth_ref": "whatever key they provide", "base_url": "https://api.falcon.com/tools" }
