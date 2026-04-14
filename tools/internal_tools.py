@@ -6,9 +6,7 @@ import datetime
 TOOL_REGISTRY = {}
 
 
-def tool(name: str, description: str, parameters: dict = None):
-    """Decorator to register an internal tool."""
-
+def tool(name, description, parameters=None):
     def decorator(func):
         TOOL_REGISTRY[name] = {
             "function": func,
@@ -27,11 +25,11 @@ def tool(name: str, description: str, parameters: dict = None):
     return decorator
 
 
-def get_tool_schemas(tool_names: list) -> list:
+def get_tool_schemas(tool_names):
     return [TOOL_REGISTRY[n]["schema"] for n in tool_names if n in TOOL_REGISTRY]
 
 
-def execute_tool(name: str, arguments: dict) -> str:
+def execute_tool(name, arguments):
     if name not in TOOL_REGISTRY:
         return json.dumps({"error": f"Tool '{name}' not found"})
     try:
@@ -41,7 +39,7 @@ def execute_tool(name: str, arguments: dict) -> str:
         return json.dumps({"error": str(e)})
 
 
-# ── Internal tools ──────────────────────────────────────────────
+# ── Internal Tools ──────────────────────────────────────────────
 
 
 @tool(
@@ -55,7 +53,7 @@ def execute_tool(name: str, arguments: dict) -> str:
         "required": ["location"],
     },
 )
-def get_weather(location: str):
+def get_weather(location):
     data = {
         "san francisco": {
             "temp_f": 62,
@@ -96,7 +94,7 @@ def get_weather(location: str):
         "required": [],
     },
 )
-def list_files(path: str = "."):
+def list_files(path="."):
     try:
         return {"files": os.listdir(path)}
     except FileNotFoundError:
@@ -117,7 +115,7 @@ def list_files(path: str = "."):
         "required": ["expression"],
     },
 )
-def calculate(expression: str):
+def calculate(expression):
     allowed = {
         "sqrt": math.sqrt,
         "sin": math.sin,
@@ -132,7 +130,7 @@ def calculate(expression: str):
         "pow": pow,
     }
     try:
-        result = eval(expression, {"__builtins__": {}}, allowed)  # noqa: S307
+        result = eval(expression, {"__builtins__": {}}, allowed)
         return {"expression": expression, "result": result}
     except Exception as e:
         return {"error": str(e)}
@@ -153,7 +151,7 @@ def calculate(expression: str):
         "required": [],
     },
 )
-def get_time(utc_offset: float = 0):
+def get_time(utc_offset=0):
     tz = datetime.timezone(datetime.timedelta(hours=utc_offset))
     now = datetime.datetime.now(tz)
     return {
@@ -178,7 +176,7 @@ def get_time(utc_offset: float = 0):
         "required": ["query"],
     },
 )
-def search_knowledge(query: str, max_results: int = 3):
+def search_knowledge(query, max_results=3):
     kb = [
         {
             "id": 1,
@@ -240,7 +238,7 @@ def search_knowledge(query: str, max_results: int = 3):
         "required": ["value", "from_unit", "to_unit"],
     },
 )
-def convert_units(value: float, from_unit: str, to_unit: str):
+def convert_units(value, from_unit, to_unit):
     conversions = {
         ("C", "F"): lambda v: v * 9 / 5 + 32,
         ("F", "C"): lambda v: (v - 32) * 5 / 9,
@@ -260,10 +258,9 @@ def convert_units(value: float, from_unit: str, to_unit: str):
     fn = conversions.get(key)
     if not fn:
         return {"error": f"Cannot convert from '{from_unit}' to '{to_unit}'"}
-    result = fn(value)
     return {
         "value": value,
         "from": from_unit,
         "to": to_unit,
-        "result": round(result, 2),
+        "result": round(fn(value), 2),
     }

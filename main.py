@@ -7,15 +7,28 @@ def read_config(file_path):
         return json.load(file)
 
 
-def build_agents(config) -> dict[str, Agent]:
+def build_agents(config):
     agents_map = {}
+    tool_auth_map = {
+        t["name"]: t.get("auth_ref", "internal") for t in config.get("tools", [])
+    }
+
     for cfg in config["agents"]:
+        agent_tools = cfg.get("tools", [])
+        internal_tools = [
+            t for t in agent_tools if tool_auth_map.get(t, "internal") == "internal"
+        ]
+        composio_tools = [
+            t for t in agent_tools if tool_auth_map.get(t, "internal") == "composio"
+        ]
+
         agents_map[cfg["agent_id"]] = Agent(
             agent_id=cfg["agent_id"],
             system_prompt=cfg["system_prompt"],
-            tools=cfg.get("tools", []),
+            tools=internal_tools,
             can_call=cfg.get("can_call", []),
             max_steps=cfg.get("max_steps", 10),
+            composio_tools=composio_tools,
         )
     return agents_map
 
@@ -24,14 +37,9 @@ if __name__ == "__main__":
     config = read_config("config.json")
     agents = build_agents(config)
     settings = config.get("agent_settings", {})
-    query = (
-        "I need help with a few things: "
-        "1) What's the weather in Tokyo and convert the temperature to Celsius, "
-        "2) Calculate the compound interest on $10,000 at 5% annual rate for 3 years (formula: 10000 * (1 + 0.05)**3), "
-        "3) Find me some info about machine learning, "
-        "4) Write me a short haiku inspired by what you find about the weather in Tokyo. Include the humidity value and temperature in Celsius in the haiku."
-    )
-    # query = "what is 55kg in lb?"
+
+    query = "Send an email to test@example.com with subject 'Hello from Agent' and body 'This is a test email from the multi-agent system.'"
+
     result = agents["main"].run(
         query=query,
         agents_map=agents,
@@ -39,6 +47,8 @@ if __name__ == "__main__":
         max_depth=settings.get("max_depth", 3),
         session_id=config.get("session_id"),
         enable_history=True,
+        entity_id=config.get("entity_id", "default"),
     )
+
     print("\n=== Final Answer ===")
     print(result)
