@@ -39,7 +39,7 @@ if __name__ == "__main__":
     settings = config.get("agent_settings", {})
 
     query = "Send an email to test@example.com with subject 'Hello from Agent' and body 'This is a test email from the multi-agent system.'"
-
+    print("session_id:", config.get("session_id"))
     result = agents["main"].run(
         query=query,
         agents_map=agents,

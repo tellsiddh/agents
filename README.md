@@ -112,7 +112,6 @@ Wrapper around OpenAI's API with:
 - Environment variable configuration
 - Session management for conversation history
 - Agent metadata tracking
-- SSL verification bypass for internal APIs
 - Support for custom base URLs
 
 **Configuration:**

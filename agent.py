@@ -121,6 +121,7 @@ class Agent:
                         target = agents_map.get(target_id)
                         if target:
                             print(f"  [{self.agent_id}] → {target_id}")
+                            print(f"  [{self.agent_id}]   Message: {args['message']}")
                             result = target.run(
                                 query=args["message"],
                                 agents_map=agents_map,
@@ -136,11 +137,15 @@ class Agent:
                             result = f"Agent '{target_id}' not found."
                     else:
                         print(f"  [{self.agent_id}] → {name}")
+                        print(
+                            f"  [{self.agent_id}]   Args: {json.dumps(args, indent=2)}"
+                        )
                         result = (
                             execute_composio_tool(tc, entity_id)
                             if self._is_composio_tool(name)
                             else execute_tool(name, args)
                         )
+                        print(f"  [{self.agent_id}]   Response: {result}")
 
                     messages.append(
                         {
