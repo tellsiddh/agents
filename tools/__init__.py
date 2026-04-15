@@ -5,6 +5,8 @@ from tools.composio_tools import (
 )
 from tools.mcp_tools import (
     register_mcp_server,
+    register_mcp_tool,
+    get_server_for_tool,
     get_mcp_tools,
     execute_mcp_tool,
     list_mcp_servers,
@@ -18,6 +20,8 @@ __all__ = [
     "get_composio_tools",
     "execute_composio_tool",
     "register_mcp_server",
+    "register_mcp_tool",
+    "get_server_for_tool",
     "get_mcp_tools",
     "execute_mcp_tool",
     "list_mcp_servers",

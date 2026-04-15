@@ -5,6 +5,8 @@ from tools import (
     execute_tool,
     get_composio_tools,
     execute_composio_tool,
+    get_mcp_tools,
+    execute_mcp_tool,
 )
 
 HANDOFF_PREFIX = "handoff_to_"
@@ -19,6 +21,7 @@ class Agent:
         can_call=None,
         max_steps=10,
         composio_tools=None,
+        mcp_servers=None,
     ):
         self.agent_id = agent_id
         self.system_prompt = system_prompt
@@ -26,12 +29,25 @@ class Agent:
         self.can_call = can_call or []
         self.max_steps = max_steps
         self.composio_tools = composio_tools or []
+        # list of MCP server names this agent can use
+        self.mcp_servers = mcp_servers or []
+        self._mcp_tool_server = {}
+        self._mcp_schemas_cache = []
 
     def _build_tools(self, agents_map, entity_id="default"):
         schemas = get_tool_schemas(self.tool_names)
 
         if self.composio_tools:
             schemas.extend(get_composio_tools(self.composio_tools, entity_id))
+
+        if self.mcp_servers:
+            if not self._mcp_tool_server:
+                for server_name in self.mcp_servers:
+                    for s in get_mcp_tools(server_name):
+                        tool_name = s["function"]["name"]
+                        self._mcp_tool_server[tool_name] = server_name
+                        self._mcp_schemas_cache.append(s)
+            schemas.extend(self._mcp_schemas_cache)
 
         for target_id in self.can_call:
             target = agents_map.get(target_id)
@@ -60,6 +76,9 @@ class Agent:
 
     def _is_composio_tool(self, tool_name):
         return any(ct.upper() in tool_name.upper() for ct in self.composio_tools)
+
+    def _is_mcp_tool(self, tool_name):
+        return tool_name in self._mcp_tool_server
 
     def run(
         self,
@@ -141,9 +160,13 @@ class Agent:
                             f"  [{self.agent_id}]   Args: {json.dumps(args, indent=2)}"
                         )
                         result = (
-                            execute_composio_tool(tc, entity_id)
-                            if self._is_composio_tool(name)
-                            else execute_tool(name, args)
+                            execute_mcp_tool(self._mcp_tool_server[name], name, args)
+                            if self._is_mcp_tool(name)
+                            else (
+                                execute_composio_tool(tc, entity_id)
+                                if self._is_composio_tool(name)
+                                else execute_tool(name, args)
+                            )
                         )
                         print(f"  [{self.agent_id}]   Response: {result}")
 
